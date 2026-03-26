@@ -678,7 +678,7 @@
     <div class="target-planner">
       <div class="target-planner-head">
         <div class="target-planner-title">成本目标反推开单量</div>
-        <div class="target-planner-note">目标总回款金额 = 公司总成本 ÷ (1 - 毛利率) · 当前平均回款周期按 75 天口径</div>
+        <div class="target-planner-note">目标总回款金额 = 公司总成本 ÷ (1 - 毛利率) · 单店合格总回款基准按样本均值折算（淡季单店合格总回款基准 300 元 / 店，旺季单店合格总回款基准 400 元 / 店）</div>
       </div>
 
       <div class="target-input-grid">
@@ -716,9 +716,9 @@
           <div class="target-card-sub">= 目标总回款金额 - 公司总成本</div>
         </div>
         <div class="target-card">
-          <div class="target-card-title">单店合格总回款基准</div>
+          <div class="target-card-title">淡季单店合格总回款基准</div>
           <div class="target-card-value" id="offStoreTotalDisplay">—</div>
-          <div class="target-card-sub">按 淡季基准线 × 75 天平均回款周期折算。</div>
+          <div class="target-card-sub">基于样本店均总回款均值，默认按 300 元 / 店测算。</div>
         </div>
       </div>
 
@@ -1277,11 +1277,11 @@ function updateTargetPlan(base) {
   document.getElementById('requiredOrdersOff').textContent = plan.offSeasonRequiredStores.toLocaleString('zh-CN') + ' 单';
   document.getElementById('requiredOrdersPeak').textContent = plan.peakRequiredStores.toLocaleString('zh-CN') + ' 单';
   document.getElementById('requiredOrdersOffSub').textContent =
-    `单店按 ¥${base.toFixed(1)}/天 × ${plan.avgReturnDays} 天 ≈ ${formatMoney(plan.offSeasonPerStoreTotal)}，精确需 ${plan.offSeasonRequiredStoresExact.toFixed(1)} 单。`;
+    `淡季按 ${formatMoney(plan.offSeasonPerStoreTotal)} / 店测算；当前基准线 ¥${base.toFixed(1)}/天 对应动态周期约 ${plan.offSeasonImpliedDays.toFixed(1)} 天，精确需 ${plan.offSeasonRequiredStoresExact.toFixed(1)} 单。`;
   document.getElementById('requiredOrdersPeakSub').textContent =
-    `旺季按 ¥${(base * plan.peakMultiplier).toFixed(1)}/天 × ${plan.avgReturnDays} 天 ≈ ${formatMoney(plan.peakPerStoreTotal)}，精确需 ${plan.peakRequiredStoresExact.toFixed(1)} 单。`;
+    `旺季按 ${formatMoney(plan.peakPerStoreTotal)} / 店测算；当前基准线 ¥${plan.peakDailyThreshold.toFixed(1)}/天 对应动态周期约 ${plan.peakSeasonImpliedDays.toFixed(1)} 天，精确需 ${plan.peakRequiredStoresExact.toFixed(1)} 单。`;
   document.getElementById('targetFormulaBox').textContent =
-    `公司总成本 ${formatCompactMoney(plan.companyCost)} ÷ (1 - 毛利率 ${(plan.grossMarginRate * 100).toFixed(0)}%) = 目标总回款 ${formatCompactMoney(plan.targetRevenue)}。在当前基准线下，淡季需开 ${plan.offSeasonRequiredStores} 单，旺季需开 ${plan.peakRequiredStores} 单。`;
+    `公司总成本 ${formatCompactMoney(plan.companyCost)} ÷ (1 - 毛利率 ${(plan.grossMarginRate * 100).toFixed(0)}%) = 目标总回款 ${formatCompactMoney(plan.targetRevenue)}。当前按淡季 ${formatMoney(plan.offSeasonPerStoreTotal)} / 店、旺季 ${formatMoney(plan.peakPerStoreTotal)} / 店测算，对应淡季需开 ${plan.offSeasonRequiredStores} 单、旺季需开 ${plan.peakRequiredStores} 单。`;
 }
 
 function getSalesTone(ratio) {
