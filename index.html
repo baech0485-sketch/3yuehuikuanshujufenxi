@@ -125,6 +125,37 @@
   .daily-summary-title { font-family:'Noto Serif SC',serif; font-size:15px; font-weight:600; color:var(--text); }
   .daily-summary-note { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; }
   .daily-summary-table { width:100%; min-width:760px; margin-bottom:0; }
+  .daily-conclusion-wrap {
+    margin-top:18px; border-top:1px solid var(--border); padding-top:18px;
+  }
+  .daily-conclusion-head {
+    display:flex; justify-content:space-between; gap:16px; align-items:flex-end;
+    flex-wrap:wrap; margin-bottom:14px;
+  }
+  .daily-conclusion-title { font-family:'Noto Serif SC',serif; font-size:15px; font-weight:600; color:var(--text); }
+  .daily-conclusion-note { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; }
+  .daily-conclusion-grid {
+    display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-bottom:12px;
+  }
+  .daily-conclusion-card {
+    background:linear-gradient(135deg,rgba(58,111,221,.04),rgba(255,255,255,.92));
+    border:1px solid var(--border); border-radius:12px; padding:18px 18px 16px;
+  }
+  .daily-conclusion-card.peak {
+    background:linear-gradient(135deg,rgba(196,125,30,.08),rgba(255,255,255,.94));
+  }
+  .daily-conclusion-label {
+    font-size:11px; letter-spacing:.08em; color:var(--muted); font-family:'DM Mono',monospace;
+    margin-bottom:8px;
+  }
+  .daily-conclusion-value {
+    font-family:'DM Mono',monospace; font-size:28px; line-height:1; margin-bottom:10px;
+  }
+  .daily-conclusion-copy { font-size:13px; color:rgba(30,30,34,.78); line-height:1.75; }
+  .daily-conclusion-footnote {
+    font-size:12px; color:var(--muted); line-height:1.8;
+    background:rgba(0,0,0,.03); border-radius:10px; padding:12px 14px;
+  }
 
   /* Table */
   .data-table { width:100%; border-collapse:collapse; margin-bottom:48px; font-size:12.5px; }
@@ -396,6 +427,7 @@
     .kpi-row{grid-template-columns:1fr 1fr;}
     .month-grid{grid-template-columns:repeat(4,1fr);}
     .loophole-grid,.sim-result-row,.finance-options,.rule-derive,.sales-method-intro,.sales-performance-intro,.sales-method-grid,.sales-kpi-grid,.sales-stage-grid,.sales-standard-grid,.target-input-grid,.target-results,.target-compare-row{grid-template-columns:1fr;}
+    .daily-conclusion-grid{grid-template-columns:1fr;}
     .rd-arrow{display:none;}
     .sales-method-block,.sales-performance-block{padding:28px 24px;}
     .container{padding:44px 18px;}
@@ -532,6 +564,33 @@
         <tbody id="dailySummaryBody"></tbody>
       </table>
     </div>
+    <div class="daily-conclusion-wrap">
+      <div class="daily-conclusion-head">
+        <div class="daily-conclusion-title">数据结论建议</div>
+        <div class="daily-conclusion-note">基于 8 个开单月份、1703 家店铺的三个月日均回款整理</div>
+      </div>
+      <div class="daily-conclusion-grid">
+        <div class="daily-conclusion-card">
+          <div class="daily-conclusion-label">淡季结论</div>
+          <div class="daily-conclusion-value" style="color:var(--accent2);">¥1.8 / 天</div>
+          <div class="daily-conclusion-copy">
+            <strong>淡季合格日均回款基准线建议：¥1.8/天</strong>。淡季样本（2025-06、2025-11、2025-12、2026-01）首月加权日均约为 ¥1.82/天，
+            用 1.8 作为默认合格线，更贴近真实经营中的合格水平。
+          </div>
+        </div>
+        <div class="daily-conclusion-card peak">
+          <div class="daily-conclusion-label">旺季结论</div>
+          <div class="daily-conclusion-value" style="color:var(--accent);">¥2.7 / 天</div>
+          <div class="daily-conclusion-copy">
+            <strong>旺季合格日均回款基准线建议：¥2.7/天</strong>。按旺季 1.5× 联动，对应基准线上调到 ¥2.7/天，
+            更适合覆盖 7–10 月回款峰值带的正常合格开单水平。
+          </div>
+        </div>
+      </div>
+      <div class="daily-conclusion-footnote">
+        建议默认按淡季 ¥1.8/天、旺季 ¥2.7/天执行；当前 ¥1.0/天更适合作为保底参考线，不建议继续作为默认合格线。
+      </div>
+    </div>
   </div>
 
   <!-- Validity Standard -->
@@ -539,7 +598,7 @@
 
   <!-- Derivation chain -->
   <div class="rule-sim">
-    <div style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:18px;letter-spacing:.05em;">■ 判定基准推导链：抽佣逻辑 → 日均回款基准线</div>
+    <div style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:18px;letter-spacing:.05em;">■ 判定基准推导链：抽佣逻辑 + 三个月日均回款整理 → 日均回款基准线</div>
     <div class="rule-derive">
       <div class="rd-step">
         <div class="rd-step-label">外卖日均单量</div>
@@ -561,8 +620,8 @@
       </div>
       <div class="rd-step">
         <div class="rd-step-label">日均回款基准线</div>
-        <div class="rd-step-val" style="color:var(--accent2);">¥1.0 / 天</div>
-        <div class="rd-step-sub">¥0.8–1.2 取整</div>
+        <div class="rd-step-val" style="color:var(--accent2);">¥1.8 / 天</div>
+        <div class="rd-step-sub">淡季默认建议值</div>
       </div>
     </div>
 
@@ -570,15 +629,15 @@
     <div class="standard-control" style="margin-top:20px;margin-bottom:20px;">
       <div class="std-label">
         <strong>合格日均回款基准线</strong>
-        <span style="font-size:11px;color:var(--muted);">拖动滑块 · 旺淡季实时联动</span>
+        <span style="font-size:11px;color:var(--muted);">拖动滑块 · 建议默认按淡季 ¥1.8/天、旺季 ¥2.7/天执行</span>
       </div>
       <div class="slider-wrap">
         <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);">¥0.5</span>
-        <input type="range" id="stdSlider" min="0.5" max="4.0" step="0.1" value="1.0">
+        <input type="range" id="stdSlider" min="0.5" max="4.0" step="0.1" value="1.8">
         <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);">¥4.0</span>
       </div>
       <div class="std-val-box">
-        <div class="std-val-display" id="stdDisplay">¥1.0</div>
+        <div class="std-val-display" id="stdDisplay">¥1.8</div>
         <div class="std-hint">/ 天 · 淡季基准</div>
       </div>
     </div>
@@ -586,7 +645,7 @@
     <div class="sim-result-row">
       <div class="sim-card season-peak">
         <div class="sim-card-title">🔥 旺季（7月–10月）· 上调 1.5×</div>
-        <div class="sim-threshold" style="color:var(--accent);" id="peakThreshold">¥1.5</div>
+        <div class="sim-threshold" style="color:var(--accent);" id="peakThreshold">¥2.7</div>
         <div class="sim-sub">/ 天 · 旺季判定基准</div>
         <div class="sim-window">
           <div class="sim-window-row">
@@ -601,7 +660,7 @@
       </div>
       <div class="sim-card season-off">
         <div class="sim-card-title">❄️ 淡季（11月–次年6月）· 基准线</div>
-        <div class="sim-threshold" style="color:var(--accent2);" id="offThreshold">¥1.0</div>
+        <div class="sim-threshold" style="color:var(--accent2);" id="offThreshold">¥1.8</div>
         <div class="sim-sub">/ 天 · 淡季判定基准</div>
         <div class="sim-window">
           <div class="sim-window-row">
@@ -640,7 +699,7 @@
         </div>
         <div class="target-input-card">
           <div class="target-input-label">当前合格基准线</div>
-          <div class="target-input-value" id="targetStdDisplay">¥1.0</div>
+          <div class="target-input-value" id="targetStdDisplay">¥1.8</div>
           <div class="target-input-sub">与上方“合格日均回款基准线”滑块实时联动。</div>
         </div>
       </div>
@@ -842,33 +901,33 @@
     <div class="sales-standard-grid">
       <div class="sales-standard-card">
         <div class="sales-standard-title">首月日均回款基准线</div>
-        <div class="sales-standard-value" id="salesStdDisplay1">¥1.0</div>
+        <div class="sales-standard-value" id="salesStdDisplay1">¥1.8</div>
         <div class="slider-wrap">
           <span class="mono" style="font-size:11px;color:var(--muted);">¥0.5</span>
-          <input type="range" id="salesStdSlider1" min="0.5" max="6.0" step="0.1" value="1.0">
+          <input type="range" id="salesStdSlider1" min="0.5" max="6.0" step="0.1" value="1.8">
           <span class="mono" style="font-size:11px;color:var(--muted);">¥6.0</span>
         </div>
-        <div class="sales-standard-sub">用于计算当月绩效单量，首月自然日按 23 天口径。</div>
+        <div class="sales-standard-sub">默认沿用建议合格线 ¥1.8/天，用于计算当月绩效单量；首月自然日按 23 天口径。</div>
       </div>
       <div class="sales-standard-card">
         <div class="sales-standard-title">第二月日均回款基准线</div>
-        <div class="sales-standard-value" id="salesStdDisplay2">¥1.0</div>
+        <div class="sales-standard-value" id="salesStdDisplay2">¥1.8</div>
         <div class="slider-wrap">
           <span class="mono" style="font-size:11px;color:var(--muted);">¥0.5</span>
-          <input type="range" id="salesStdSlider2" min="0.5" max="6.0" step="0.1" value="1.0">
+          <input type="range" id="salesStdSlider2" min="0.5" max="6.0" step="0.1" value="1.8">
           <span class="mono" style="font-size:11px;color:var(--muted);">¥6.0</span>
         </div>
-        <div class="sales-standard-sub">第二月原始折算单量 × 10% 后，计入下个月额外单量；第二月自然日按 30 天口径。</div>
+        <div class="sales-standard-sub">默认沿用建议合格线 ¥1.8/天；第二月原始折算单量 × 10% 后，计入下个月额外单量；第二月自然日按 30 天口径。</div>
       </div>
       <div class="sales-standard-card">
         <div class="sales-standard-title">第三月日均回款基准线</div>
-        <div class="sales-standard-value" id="salesStdDisplay3">¥1.0</div>
+        <div class="sales-standard-value" id="salesStdDisplay3">¥1.8</div>
         <div class="slider-wrap">
           <span class="mono" style="font-size:11px;color:var(--muted);">¥0.5</span>
-          <input type="range" id="salesStdSlider3" min="0.5" max="6.0" step="0.1" value="1.0">
+          <input type="range" id="salesStdSlider3" min="0.5" max="6.0" step="0.1" value="1.8">
           <span class="mono" style="font-size:11px;color:var(--muted);">¥6.0</span>
         </div>
-        <div class="sales-standard-sub">第三月原始折算单量 × 5% 后，计入下下个月额外单量；第三月自然日按 31 天口径。</div>
+        <div class="sales-standard-sub">默认沿用建议合格线 ¥1.8/天；第三月原始折算单量 × 5% 后，计入下下个月额外单量；第三月自然日按 31 天口径。</div>
       </div>
     </div>
 
@@ -1081,7 +1140,7 @@ renderDailyReturnTrend(dailyTrendSeries);
 // ─── 队列表格 ─────────────────────────────────────────────────────────
 function fmtDaily(v) {
   if(v===null) return '<span style="color:var(--muted);">—</span>';
-  const color = v>=1.5?'var(--good)':v>=1.0?'var(--warn)':'var(--bad)';
+  const color = v>=1.8?'var(--good)':v>=1.5?'var(--warn)':'var(--bad)';
   return `<span class="mono" style="color:${color};">¥${v.toFixed(2)}</span>`;
 }
 function fmtPct(v){
@@ -1119,7 +1178,7 @@ months.forEach(d => {
       <td>${fmtDaily(d.firstMonth.dailyAvg)}</td>
       <td>${fmtDaily(d.secondMonth.dailyAvg)}</td>
       <td>${fmtDaily(d.thirdMonth.dailyAvg)}</td>
-      <td><span class="mono" style="color:${d.threeMonthAverageDaily >= 3 ? 'var(--good)' : d.threeMonthAverageDaily >= 2 ? 'var(--accent)' : 'var(--warn)'};">¥${d.threeMonthAverageDaily.toFixed(2)}</span></td>
+      <td><span class="mono" style="color:${d.threeMonthAverageDaily >= 2.7 ? 'var(--good)' : d.threeMonthAverageDaily >= 1.8 ? 'var(--accent)' : 'var(--warn)'};">¥${d.threeMonthAverageDaily.toFixed(2)}</span></td>
       <td><span class="mono" style="color:${d.perStoreTotalReturn >= 350 ? 'var(--good)' : d.perStoreTotalReturn >= 250 ? 'var(--accent)' : 'var(--warn)'};">¥${d.perStoreTotalReturn.toFixed(2)}</span></td>
       <td><span style="font-size:11px;color:${d.peak?'var(--accent)':'var(--muted)'};">${d.peak?'🔥 旺季':'淡季'}</span></td>
     </tr>`;
@@ -1360,8 +1419,8 @@ salesPerformanceBody.addEventListener('input', (event) => {
   salesPerformanceState[index][`${stage}Total`] = Number(target.value || 0);
   renderSalesPerformance();
 });
-updateSim(1.0);
-updateTargetPlan(1.0);
+updateSim(1.8);
+updateTargetPlan(1.8);
 renderSalesPerformance();
 </script>
 </body>
