@@ -18,6 +18,8 @@ assert.match(html, /id="companyCostInput" min="1000" step="10" value="70000"/, '
 assert.match(html, /公司总成本/, '页面应展示公司总成本输入');
 assert.match(html, /目标总回款金额/, '页面应展示目标总回款金额');
 assert.match(html, /计划利润额/, '页面应展示计划利润额');
+assert.match(html, /跨多个月汇总的总回款目标/, '页面应说明目标总回款金额是跨多个月汇总的总金额');
+assert.match(html, /前三个月回款金额约占 75%/, '页面应说明前三个月回款金额约占总回款目标的 75%');
 assert.match(html, /淡季计划开单数/, '页面应展示淡季计划开单数');
 assert.match(html, /旺季等价开单数/, '页面应展示旺季等价开单数');
 assert.match(html, /淡季计划开单主控/, '页面应说明淡季计划开单数是主控项');
