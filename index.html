@@ -680,7 +680,7 @@
     <div class="target-planner">
       <div class="target-planner-head">
         <div class="target-planner-title">固定成本下的开单计划测算</div>
-        <div class="target-planner-note">固定参考目标仍由公司总成本 ÷ (1 - 目标利润率) 反推；下方滑块会联动当前计划总回款金额、当前计划利润额、目标完成率和旺季等价单量，但不会改动公司总成本。单店合格总回款基准按样本均值折算（淡季单店合格总回款基准 200 元 / 店，旺季单店合格总回款基准 300 元 / 店）。</div>
+        <div class="target-planner-note">固定参考目标仍由公司总成本 ÷ (1 - 固定目标利润率 40%) 反推；下方滑块会联动当前计划总回款金额、当前计划利润额、目标完成率和旺季等价单量，但不会改动公司总成本。单店合格总回款基准按样本均值折算（淡季单店合格总回款基准 200 元 / 店，旺季单店合格总回款基准 300 元 / 店）。</div>
       </div>
 
       <div class="target-input-grid">
@@ -688,16 +688,6 @@
           <div class="target-input-label">公司总成本（月）</div>
           <input type="number" id="companyCostInput" min="1000" step="10" value="70000">
           <div class="target-input-sub">手动输入公司月总成本后，系统会重置固定参考目标，并同步默认建议开单数；拖动下方主控滑块时，这里不会被改动。</div>
-        </div>
-        <div class="target-input-card">
-          <div class="target-input-label">目标利润率</div>
-          <div class="target-input-value" id="grossMarginDisplay">40%</div>
-          <div class="target-range-row">
-            <span class="mono" style="font-size:11px;color:var(--muted);">10%</span>
-            <input type="range" id="grossMarginSlider" min="10" max="70" step="1" value="40">
-            <span class="mono" style="font-size:11px;color:var(--muted);">70%</span>
-          </div>
-          <div class="target-input-sub">默认按 40% 利润率估算，可手动调整。</div>
         </div>
         <div class="target-input-card">
           <div class="target-input-label">淡季计划开单主控</div>
@@ -708,11 +698,6 @@
             <span class="mono" style="font-size:11px;color:var(--muted);">1500</span>
           </div>
           <div class="target-input-sub">拖动滑块将联动测算计划回款、目标完成率和旺季等价单量，不会改动公司总成本。</div>
-        </div>
-        <div class="target-input-card">
-          <div class="target-input-label">当前合格基准线</div>
-          <div class="target-input-value" id="targetStdDisplay">¥1.8</div>
-          <div class="target-input-sub">该判定基准已固定展示，不再作为联动输入项。</div>
         </div>
       </div>
 
@@ -1252,10 +1237,10 @@ dailySummaryBody.innerHTML += `
 const slider  = document.getElementById('stdSlider');
 const display = document.getElementById('stdDisplay');
 const companyCostInput = document.getElementById('companyCostInput');
-const grossMarginSlider = document.getElementById('grossMarginSlider');
 const requiredOrdersOffSlider = document.getElementById('requiredOrdersOffSlider');
 const requiredOrdersOffControlDisplay = document.getElementById('requiredOrdersOffControlDisplay');
 const FIXED_BASE_DAILY_THRESHOLD = 1.8;
+const FIXED_TARGET_MARGIN_RATE = 0.4;
 const marchSalesUtils = window.MarchSalesUtils;
 const salesPerformanceBody = document.getElementById('salesPerformanceBody');
 const salesPerformanceState = marchSalesUtils.MARCH_SALES_PEOPLE.map((person) => ({
@@ -1294,8 +1279,6 @@ function syncRequiredOrdersOffControl(value) {
 }
 
 function renderTargetPlan(plan) {
-  document.getElementById('grossMarginDisplay').textContent = Math.round(plan.grossMarginRate * 100) + '%';
-  document.getElementById('targetStdDisplay').textContent = '¥' + plan.baseDailyThreshold.toFixed(1);
   document.getElementById('targetRevenueDisplay').textContent = formatCompactMoney(plan.targetRevenue);
   document.getElementById('targetProfitDisplay').textContent = formatCompactMoney(plan.targetGrossProfit);
   document.getElementById('offStoreTotalDisplay').textContent = formatMoney(plan.offSeasonPerStoreTotal);
@@ -1311,10 +1294,7 @@ function renderTargetPlan(plan) {
 
 function updateTargetPlanFromCost() {
   const companyCost = Number(companyCostInput.value || 0);
-  const grossMarginRate = Number(grossMarginSlider.value) / 100;
   if (!Number.isFinite(companyCost) || companyCost <= 0) {
-    document.getElementById('grossMarginDisplay').textContent = Math.round(grossMarginRate * 100) + '%';
-    document.getElementById('targetStdDisplay').textContent = '¥' + FIXED_BASE_DAILY_THRESHOLD.toFixed(1);
     document.getElementById('targetRevenueDisplay').textContent = '—';
     document.getElementById('targetProfitDisplay').textContent = '—';
     document.getElementById('offStoreTotalDisplay').textContent = '—';
@@ -1328,7 +1308,7 @@ function updateTargetPlanFromCost() {
   }
   const plan = validityTargetUtils.calculateTargetPlanByStandard({
     companyCost,
-    grossMarginRate,
+    grossMarginRate: FIXED_TARGET_MARGIN_RATE,
     baseDailyThreshold: FIXED_BASE_DAILY_THRESHOLD
   });
   syncRequiredOrdersOffControl(plan.offSeasonRequiredStoresExact);
@@ -1338,10 +1318,7 @@ function updateTargetPlanFromCost() {
 function updateTargetPlanFromOrders() {
   const companyCost = Number(companyCostInput.value || 0);
   const orderTarget = Number(requiredOrdersOffSlider.value || 0);
-  const grossMarginRate = Number(grossMarginSlider.value) / 100;
   if (!Number.isFinite(companyCost) || companyCost <= 0) {
-    document.getElementById('grossMarginDisplay').textContent = Math.round(grossMarginRate * 100) + '%';
-    document.getElementById('targetStdDisplay').textContent = '¥' + FIXED_BASE_DAILY_THRESHOLD.toFixed(1);
     document.getElementById('targetRevenueDisplay').textContent = '—';
     document.getElementById('targetProfitDisplay').textContent = '—';
     document.getElementById('offStoreTotalDisplay').textContent = '—';
@@ -1355,7 +1332,7 @@ function updateTargetPlanFromOrders() {
   const plan = validityTargetUtils.calculateTargetPlanByOrders({
     companyCost,
     offSeasonPlannedStores: orderTarget,
-    grossMarginRate,
+    grossMarginRate: FIXED_TARGET_MARGIN_RATE,
     baseDailyThreshold: FIXED_BASE_DAILY_THRESHOLD
   });
   syncRequiredOrdersOffControl(plan.offSeasonPlannedStoresExact);
@@ -1474,7 +1451,6 @@ function renderSalesPerformance() {
   salesPerformanceBody.innerHTML = rows;
 }
 
-grossMarginSlider.addEventListener('input', () => updateTargetPlanFromOrders());
 companyCostInput.addEventListener('input', () => updateTargetPlanFromCost());
 requiredOrdersOffSlider.addEventListener('input', () => updateTargetPlanFromOrders());
 Object.values(salesStdSliders).forEach((element) => {

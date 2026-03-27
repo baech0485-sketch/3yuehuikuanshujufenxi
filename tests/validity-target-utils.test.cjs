@@ -11,19 +11,21 @@ assert.match(html, /id="stdSlider" min="0\.5" max="4\.0" step="0\.1" value="1\.8
 assert.match(html, /id="stdDisplay">¥1\.8</, '合格日均回款基准线显示值应调整为 1.8');
 assert.match(html, /id="offThreshold">¥1\.8</, '淡季判定基准默认值应调整为 1.8');
 assert.match(html, /id="peakThreshold">¥2\.7</, '旺季判定基准默认值应调整为 2.7');
-assert.match(html, /id="targetStdDisplay">¥1\.8</, '目标测算区域默认基准线应调整为 1.8');
 assert.match(html, /固定展示 · 淡季 ¥1\.8\/天、旺季 ¥2\.7\/天/, '页面应说明日均回款基准线已固定');
 assert.match(html, /id="requiredOrdersOffSlider"/, '页面应新增淡季所需开单数滑块');
 assert.match(html, /id="requiredOrdersOffControlDisplay"/, '页面应新增淡季所需开单数滑块显示值');
 assert.match(html, /id="companyCostInput" min="1000" step="10" value="70000"/, '公司总成本输入应保留并支持与滑块联动');
 assert.match(html, /公司总成本/, '页面应展示公司总成本输入');
-assert.match(html, /目标利润率/, '页面应展示目标利润率输入');
 assert.match(html, /目标总回款金额/, '页面应展示目标总回款金额');
 assert.match(html, /计划利润额/, '页面应展示计划利润额');
 assert.match(html, /淡季计划开单数/, '页面应展示淡季计划开单数');
 assert.match(html, /旺季等价开单数/, '页面应展示旺季等价开单数');
 assert.match(html, /淡季计划开单主控/, '页面应说明淡季计划开单数是主控项');
 assert.match(html, /拖动滑块将联动测算计划回款、目标完成率和旺季等价单量，不会改动公司总成本/, '页面应说明新的联动方向');
+assert.doesNotMatch(html, /id="grossMarginSlider"/, '页面应移除目标利润率滑块组件');
+assert.doesNotMatch(html, /id="grossMarginDisplay"/, '页面应移除目标利润率显示组件');
+assert.doesNotMatch(html, /id="targetStdDisplay"/, '页面应移除当前合格基准线组件');
+assert.doesNotMatch(html, /<div class="target-input-label">当前合格基准线<\/div>/, '页面应移除当前合格基准线卡片');
 
 const {
   DEFAULT_PEAK_MULTIPLIER,
