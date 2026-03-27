@@ -78,6 +78,8 @@
     return months.map((item) => ({
       ...item,
       peak: ['2025-07', '2025-08', '2025-09', '2025-10'].includes(item.openMonth),
+      secondMonthRetentionPct: (item.secondMonth.total / item.firstMonth.total) * 100,
+      thirdMonthRetentionPct: (item.thirdMonth.total / item.firstMonth.total) * 100,
       threeMonthPct: Math.round(item.threeMonthWindowTotal / item.totalToDate * 100),
       perStoreTotalReturn: item.totalToDate / item.stores,
       totalPerStore: Math.round(item.totalToDate / item.stores),
@@ -105,6 +107,8 @@
         total: average(months.map((item) => item.thirdMonth.total)),
         dailyAvg: average(months.map((item) => item.thirdMonth.dailyAvg)),
       },
+      secondMonthRetentionPct: average(months.map((item) => item.secondMonthRetentionPct)),
+      thirdMonthRetentionPct: average(months.map((item) => item.thirdMonthRetentionPct)),
       threeMonthWindowTotal: average(months.map((item) => item.threeMonthWindowTotal)),
       totalToDate: average(months.map((item) => item.totalToDate)),
       threeMonthPct: average(months.map((item) => item.threeMonthPct)),

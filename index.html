@@ -534,6 +534,8 @@
           <th>首月日均回款</th>
           <th>第二月日均回款</th>
           <th>第三月日均回款</th>
+          <th>次月留存金额比例</th>
+          <th>第三月留存金额比例</th>
           <th>前三月总占比</th>
           <th>每店截至总回款</th>
           <th>季节</th>
@@ -1148,6 +1150,10 @@ function fmtPct(v){
   const w = Math.min(v,100);
   return `<div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:${w}%;background:var(--accent2);opacity:.6;"></div></div><span class="mono" style="font-size:11px;">${v}%</span></div>`;
 }
+function fmtRetention(v, digits = 0) {
+  const color = v >= 180 ? 'var(--good)' : v >= 120 ? 'var(--accent)' : 'var(--warn)';
+  return `<span class="mono" style="color:${color};">${v.toFixed(digits)}%</span>`;
+}
 
 const tbody = document.getElementById('cohortBody');
 const dailySummaryBody = document.getElementById('dailySummaryBody');
@@ -1167,6 +1173,8 @@ months.forEach(d => {
     <td>${fmtDaily(d.firstMonth.dailyAvg)}</td>
     <td>${fmtDaily(d.secondMonth.dailyAvg)}</td>
     <td>${fmtDaily(d.thirdMonth.dailyAvg)}</td>
+    <td>${fmtRetention(d.secondMonthRetentionPct)}</td>
+    <td>${fmtRetention(d.thirdMonthRetentionPct)}</td>
     <td>${fmtPct(d.threeMonthPct)}</td>
     <td class="mono" style="color:${d.peak?'var(--accent)':'var(--text)'};">¥${d.totalPerStore}</td>
     <td><span style="font-size:11px;color:${d.peak?'var(--accent)':'var(--muted)'};">${d.peak?'🔥 旺季':'淡季'}</span></td>
@@ -1199,6 +1207,8 @@ tbody.innerHTML += `
     <td>${fmtDaily(cohortAverages.firstMonth.dailyAvg)}</td>
     <td>${fmtDaily(cohortAverages.secondMonth.dailyAvg)}</td>
     <td>${fmtDaily(cohortAverages.thirdMonth.dailyAvg)}</td>
+    <td>${fmtRetention(cohortAverages.secondMonthRetentionPct, 1)}</td>
+    <td>${fmtRetention(cohortAverages.thirdMonthRetentionPct, 1)}</td>
     <td>${fmtPct(Number(cohortAverages.threeMonthPct.toFixed(1)))}</td>
     <td class="mono">¥${cohortAverages.totalPerStore.toFixed(1)}</td>
     <td><span style="font-size:11px;color:var(--muted);">样本均值</span></td>
