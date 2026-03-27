@@ -1287,9 +1287,9 @@ function renderTargetPlan(plan) {
   document.getElementById('requiredOrdersOff').textContent = formatOrderCount(plan.offSeasonPlannedStoresExact) + ' 单';
   document.getElementById('requiredOrdersPeak').textContent = formatOrderCount(plan.peakEquivalentStoresExact) + ' 单';
   document.getElementById('requiredOrdersOffSub').textContent =
-    `按 ${formatMoney(plan.offSeasonPerStoreTotal)} / 店可形成 ${formatCompactMoney(plan.offSeasonPlannedRevenue)}；固定目标需 ${plan.offSeasonRequiredStoresExact.toFixed(1)} 单，当前完成率 ${(plan.completionRate * 100).toFixed(1)}%。`;
+    `按 ${formatMoney(plan.offSeasonPerStoreTotal)} / 店可形成 ${formatCompactMoney(plan.offSeasonPlannedRevenue)}；固定参考目标口径下，淡季需 ${plan.offSeasonRequiredStoresExact.toFixed(1)} 单，当前完成率 ${(plan.completionRate * 100).toFixed(1)}%。`;
   document.getElementById('requiredOrdersPeakSub').textContent =
-    `按 ${formatMoney(plan.peakPerStoreTotal)} / 店折算，相当于 ${plan.peakEquivalentStoresExact.toFixed(1)} 单；固定目标旺季需 ${plan.peakRequiredStoresExact.toFixed(1)} 单。`;
+    `按 ${formatMoney(plan.peakPerStoreTotal)} / 店折算，相当于 ${plan.peakEquivalentStoresExact.toFixed(1)} 单；固定参考目标口径下，旺季需 ${plan.peakRequiredStoresExact.toFixed(1)} 单。`;
   document.getElementById('targetFormulaBox').textContent =
     `公司总成本 ${formatCompactMoney(plan.companyCost)} ÷ (1 - 目标利润率 ${(plan.grossMarginRate * 100).toFixed(0)}%) = 固定参考目标 ${formatCompactMoney(plan.benchmarkRevenue)}。当前计划开 ${formatOrderCount(plan.offSeasonPlannedStoresExact)} 单，对应计划总回款 ${formatCompactMoney(plan.targetRevenue)}、计划利润额 ${formatCompactMoney(plan.targetGrossProfit)}，${plan.revenueGap >= 0 ? '距离参考目标还差 ' + formatCompactMoney(Math.abs(plan.revenueGap)) : '已超出参考目标 ' + formatCompactMoney(Math.abs(plan.revenueGap))}。`;
 }
