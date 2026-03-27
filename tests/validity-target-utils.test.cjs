@@ -18,6 +18,8 @@ assert.match(html, /id="companyCostInput" min="1000" step="10" value="70000"/, '
 assert.match(html, /公司总成本/, '页面应展示公司总成本输入');
 assert.match(html, /目标总回款金额/, '页面应展示目标总回款金额');
 assert.match(html, /计划利润额/, '页面应展示计划利润额');
+assert.match(html, /id="targetProfitRateSub"/, '页面应新增计划利润率显示位置');
+assert.match(html, /当前利润率/, '页面应展示当前利润率说明');
 assert.match(html, /跨多个月汇总的总回款目标/, '页面应说明目标总回款金额是跨多个月汇总的总金额');
 assert.match(html, /前三个月回款金额约占 75%/, '页面应说明前三个月回款金额约占总回款目标的 75%');
 assert.match(html, /淡季计划开单数/, '页面应展示淡季计划开单数');
@@ -73,6 +75,7 @@ const orderDrivenResult = calculateTargetPlanByOrders({
 assert.equal(orderDrivenResult.companyCost.toFixed(2), '70000.00', '按计划开单数测算时，公司总成本不应被改动');
 assert.equal(orderDrivenResult.targetRevenue.toFixed(2), '120000.00', '按计划开单数测算时，目标总回款金额应随滑块变化');
 assert.equal(orderDrivenResult.targetGrossProfit.toFixed(2), '50000.00', '按计划开单数测算时，计划利润额应按总回款减公司总成本计算');
+assert.equal(orderDrivenResult.targetProfitMarginRate.toFixed(4), '0.4167', '按计划开单数测算时，当前利润率不正确');
 assert.equal(orderDrivenResult.benchmarkRevenue.toFixed(2), '116666.67', '固定公司总成本对应的参考目标总回款金额不正确');
 assert.equal(orderDrivenResult.benchmarkGrossProfit.toFixed(2), '46666.67', '固定公司总成本对应的参考目标利润额不正确');
 assert.equal(orderDrivenResult.offSeasonPlannedStoresExact.toFixed(1), '600.0', '淡季计划开单精确值不正确');

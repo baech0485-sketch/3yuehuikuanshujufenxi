@@ -710,6 +710,7 @@
         <div class="target-card">
           <div class="target-card-title">计划利润额</div>
           <div class="target-card-value" id="targetProfitDisplay">—</div>
+          <div class="target-card-sub" id="targetProfitRateSub">当前利润率 —</div>
           <div class="target-card-sub">会随淡季计划开单主控变化，= 当前计划总回款金额 - 公司总成本。</div>
         </div>
         <div class="target-card">
@@ -1281,6 +1282,7 @@ function syncRequiredOrdersOffControl(value) {
 function renderTargetPlan(plan) {
   document.getElementById('targetRevenueDisplay').textContent = formatCompactMoney(plan.targetRevenue);
   document.getElementById('targetProfitDisplay').textContent = formatCompactMoney(plan.targetGrossProfit);
+  document.getElementById('targetProfitRateSub').textContent = `当前利润率 ${(plan.targetProfitMarginRate * 100).toFixed(1)}%`;
   document.getElementById('offStoreTotalDisplay').textContent = formatMoney(plan.offSeasonPerStoreTotal);
   document.getElementById('requiredOrdersOff').textContent = formatOrderCount(plan.offSeasonPlannedStoresExact) + ' 单';
   document.getElementById('requiredOrdersPeak').textContent = formatOrderCount(plan.peakEquivalentStoresExact) + ' 单';
@@ -1297,6 +1299,7 @@ function updateTargetPlanFromCost() {
   if (!Number.isFinite(companyCost) || companyCost <= 0) {
     document.getElementById('targetRevenueDisplay').textContent = '—';
     document.getElementById('targetProfitDisplay').textContent = '—';
+    document.getElementById('targetProfitRateSub').textContent = '当前利润率 —';
     document.getElementById('offStoreTotalDisplay').textContent = '—';
     document.getElementById('requiredOrdersOff').textContent = '—';
     document.getElementById('requiredOrdersPeak').textContent = '—';
@@ -1321,6 +1324,7 @@ function updateTargetPlanFromOrders() {
   if (!Number.isFinite(companyCost) || companyCost <= 0) {
     document.getElementById('targetRevenueDisplay').textContent = '—';
     document.getElementById('targetProfitDisplay').textContent = '—';
+    document.getElementById('targetProfitRateSub').textContent = '当前利润率 —';
     document.getElementById('offStoreTotalDisplay').textContent = '—';
     document.getElementById('requiredOrdersOff').textContent = '—';
     document.getElementById('requiredOrdersPeak').textContent = '—';

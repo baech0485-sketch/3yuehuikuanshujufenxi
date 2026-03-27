@@ -113,6 +113,7 @@
     });
     const plannedRevenue = plannedStores * plan.offSeasonPerStoreTotal;
     const plannedGrossProfit = plannedRevenue - cost;
+    const plannedProfitMarginRate = plannedRevenue > 0 ? plannedGrossProfit / plannedRevenue : 0;
     const revenueGap = plan.targetRevenue - plannedRevenue;
     const completionRate = plannedRevenue / plan.targetRevenue;
     const peakEquivalentStoresExact = plannedRevenue / plan.peakPerStoreTotal;
@@ -124,6 +125,7 @@
       benchmarkGrossProfit: plan.targetGrossProfit,
       targetRevenue: plannedRevenue,
       targetGrossProfit: plannedGrossProfit,
+      targetProfitMarginRate: plannedProfitMarginRate,
       offSeasonPlannedStoresExact: plannedStores,
       offSeasonPlannedStores: Math.ceil(plannedStores),
       offSeasonPlannedRevenue: plannedRevenue,
