@@ -6,6 +6,13 @@ const htmlPath = path.resolve(__dirname, '..', 'index.html');
 const modulePath = path.resolve(__dirname, '..', 'cohort-data.js');
 
 const html = readFileSync(htmlPath, 'utf8');
+const cohortTableMatch = html.match(/<table class="data-table">([\s\S]*?)<tbody id="cohortBody"><\/tbody>[\s\S]*?<\/table>/);
+const dailySummaryTableMatch = html.match(/<table class="data-table daily-summary-table">([\s\S]*?)<tbody id="dailySummaryBody"><\/tbody>[\s\S]*?<\/table>/);
+assert.ok(cohortTableMatch, '应能定位开单月份回款队列表');
+assert.ok(dailySummaryTableMatch, '应能定位三个月日均回款整理表');
+const cohortTableMarkup = cohortTableMatch[1];
+const dailySummaryTableMarkup = dailySummaryTableMatch[1];
+
 assert.match(html, /cohort-data\.js/, 'index.html 应引入月份队列数据脚本');
 assert.match(html, /max-width:\s*1240px/, '页面主体宽度应调整到 1240px');
 assert.match(html, /<div class="section-title">当月开单店铺总回款金额趋势<\/div>/, '第二张趋势图标题应改为当月开单店铺总回款金额趋势');
@@ -15,14 +22,16 @@ assert.match(html, /当月开单店铺总回款金额（¥）/, '页面应展示
 assert.match(html, /首月回款总额/, '页面应展示首月回款总额');
 assert.match(html, /次月回款总额/, '页面应展示次月回款总额');
 assert.match(html, /第三月回款总额/, '页面应展示第三月回款总额');
-assert.match(html, /次月留存金额比例/, '页面应展示次月留存金额比例');
-assert.match(html, /第三月留存金额比例/, '页面应展示第三月留存金额比例');
+assert.doesNotMatch(cohortTableMarkup, /次月留存金额比例/, '开单月份回款队列表应移除次月留存金额比例');
+assert.doesNotMatch(cohortTableMarkup, /第三月留存金额比例/, '开单月份回款队列表应移除第三月留存金额比例');
 assert.match(html, /前三月窗口总回款金额/, '页面应展示前三月窗口总回款金额');
 assert.match(html, /截至2026-03-24总回款金额/, '页面应展示截至统计日总回款金额');
 assert.match(html, /平均值/, '页面应在队列表格最后增加平均值行');
 assert.match(html, /三个月日均回款整理/, '页面应在队列表格下方增加三个月日均回款整理区');
 assert.match(html, /三个月平均日均回款/, '页面应展示三个月平均日均回款列');
 assert.match(html, /店均总回款（总额÷店铺数）/, '页面应展示店均总回款衍生列');
+assert.match(dailySummaryTableMarkup, /次月留存金额比例/, '三个月日均回款整理表应展示次月留存金额比例');
+assert.match(dailySummaryTableMarkup, /第三月留存金额比例/, '三个月日均回款整理表应展示第三月留存金额比例');
 assert.match(html, /数据结论建议/, '页面应在三个月日均回款整理下方增加数据结论建议');
 assert.match(html, /淡季合格日均回款基准线建议：¥1\.8\/天/, '页面应展示淡季基准线建议结论');
 assert.match(html, /旺季合格日均回款基准线建议：¥2\.7\/天/, '页面应展示旺季基准线建议结论');

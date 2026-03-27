@@ -16,7 +16,7 @@ const {
 const html = readFileSync(htmlPath, 'utf8');
 assert.match(html, /march-sales-utils\.js/, 'index.html 应引入 3 月销售绩效脚本');
 assert.match(html, /销售开单绩效计算方法/, '页面应展示销售开单绩效计算方法');
-assert.match(html, /2025年3月销售开单三阶段绩效折算/, '页面应展示新的三阶段销售折算板块');
+assert.match(html, /2026年3月销售开单三阶段绩效折算/, '页面应展示新的三阶段销售折算板块');
 assert.match(html, /第二月折算单量按 <strong>10%<\/strong> 记作下个月额外单量/, '页面应说明第二月折算单量按 10% 计入');
 assert.match(html, /第三月折算单量按 <strong>5%<\/strong> 记作下下个月额外单量/, '页面应说明第三月折算单量按 5% 计入');
 assert.match(html, /10%/, '页面应说明第二月额外单量按 10% 计入');
@@ -36,15 +36,15 @@ assert.match(html, /id="salesStdSlider3"/, '页面应展示第三月基准线滑
 assert.doesNotMatch(html, /id="marchStdSlider"/, '旧的单月折算滑块应移除');
 assert.doesNotMatch(html, /id="marchSalesBody"/, '旧的单月折算表格应移除');
 
-assert.equal(MARCH_STAGE_DAYS.firstMonth, 23, '首月统计天数应为 23');
+assert.equal(MARCH_STAGE_DAYS.firstMonth, 26, '首月统计天数应为 26');
 assert.equal(MARCH_STAGE_DAYS.secondMonth, 30, '第二月统计天数应为 30');
 assert.equal(MARCH_STAGE_DAYS.thirdMonth, 31, '第三月统计天数应为 31');
 assert.equal(MARCH_STAGE_BONUS_RATES.secondMonth, 0.1, '第二月额外单量系数应为 10%');
 assert.equal(MARCH_STAGE_BONUS_RATES.thirdMonth, 0.05, '第三月额外单量系数应为 5%');
-assert.equal(MARCH_SALES_PEOPLE.length, 9, '3 月销售数据应包含 9 名销售');
-assert.equal(MARCH_SALES_TOTAL_STORES, 202, '3 月总开单数应为 202');
+assert.equal(MARCH_SALES_PEOPLE.length, 11, '3 月销售数据应包含 11 名销售');
+assert.equal(MARCH_SALES_TOTAL_STORES, 243, '3 月总开单数应为 243');
 
-assert.equal(calculateStageDaily(2000.5, 45, 23).toFixed(2), '1.93', '首月自然日均回款计算不正确');
+assert.equal(calculateStageDaily(2932.4, 61, 26).toFixed(2), '1.85', '首月自然日均回款计算不正确');
 
 const baseMetrics = calculateSalesPerformanceMetrics(MARCH_SALES_PEOPLE, {
   firstMonth: 1.0,
@@ -52,8 +52,10 @@ const baseMetrics = calculateSalesPerformanceMetrics(MARCH_SALES_PEOPLE, {
   thirdMonth: 1.0,
 });
 
-assert.equal(baseMetrics.rows.length, 9, '应为每名销售生成一行三阶段结果');
-assert.equal(baseMetrics.stageSummaries.firstMonth.performanceOrders.toFixed(2), '306.58', '首月绩效单量不正确');
+assert.equal(baseMetrics.rows.length, 11, '应为每名销售生成一行三阶段结果');
+assert.equal(baseMetrics.stageSummaries.firstMonth.totalReturn.toFixed(2), '9302.81', '首月总回款汇总不正确');
+assert.equal(baseMetrics.stageSummaries.firstMonth.weightedDaily.toFixed(2), '1.47', '首月加权自然日均回款不正确');
+assert.equal(baseMetrics.stageSummaries.firstMonth.performanceOrders.toFixed(2), '357.80', '首月绩效单量不正确');
 assert.equal(baseMetrics.stageSummaries.secondMonth.performanceOrders.toFixed(2), '0.00', '第二月默认绩效单量应为 0');
 assert.equal(baseMetrics.stageSummaries.thirdMonth.performanceOrders.toFixed(2), '0.00', '第三月默认绩效单量应为 0');
 
@@ -67,12 +69,12 @@ const stagedMetrics = calculateSalesPerformanceMetrics(stagedPeople, {
   thirdMonth: 1.5,
 });
 
-assert.equal(stagedMetrics.rows[0].stages.secondMonth.dailyAvg.toFixed(2), '2.00', '第二月自然日均回款计算不正确');
+assert.equal(stagedMetrics.rows[0].stages.secondMonth.dailyAvg.toFixed(2), '1.48', '第二月自然日均回款计算不正确');
 assert.equal(stagedMetrics.rows[0].stages.secondMonth.rawPerformanceOrders.toFixed(2), '90.00', '第二月原始折算单量不正确');
 assert.equal(stagedMetrics.rows[0].stages.secondMonth.performanceOrders.toFixed(2), '9.00', '第二月额外单量折算不正确');
-assert.equal(stagedMetrics.rows[0].stages.thirdMonth.dailyAvg.toFixed(2), '1.50', '第三月自然日均回款计算不正确');
+assert.equal(stagedMetrics.rows[0].stages.thirdMonth.dailyAvg.toFixed(2), '1.11', '第三月自然日均回款计算不正确');
 assert.equal(stagedMetrics.rows[0].stages.thirdMonth.rawPerformanceOrders.toFixed(2), '45.00', '第三月原始折算单量不正确');
 assert.equal(stagedMetrics.rows[0].stages.thirdMonth.performanceOrders.toFixed(2), '2.25', '第三月额外单量折算不正确');
 assert.equal(stagedMetrics.stageSummaries.secondMonth.totalReturn.toFixed(2), '2700.00', '第二月总回款汇总不正确');
 assert.equal(stagedMetrics.stageSummaries.thirdMonth.totalReturn.toFixed(2), '2092.50', '第三月总回款汇总不正确');
-assert.equal(stagedMetrics.totalPerformanceOrders.toFixed(2), '317.83', '三阶段累计绩效单量不正确');
+assert.equal(stagedMetrics.totalPerformanceOrders.toFixed(2), '369.05', '三阶段累计绩效单量不正确');

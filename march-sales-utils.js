@@ -1,7 +1,7 @@
 (function (globalScope) {
   const MARCH_STAGE_KEYS = ['firstMonth', 'secondMonth', 'thirdMonth'];
   const MARCH_STAGE_DAYS = {
-    firstMonth: 23,
+    firstMonth: 26,
     secondMonth: 30,
     thirdMonth: 31,
   };
@@ -12,15 +12,17 @@
   };
 
   const MARCH_SALES_PEOPLE = [
-    { name: '向文强', stores: 45, firstMonthTotal: 2000.5, secondMonthTotal: 0, thirdMonthTotal: 0 },
-    { name: '梁智', stores: 55, firstMonthTotal: 2165.0, secondMonthTotal: 0, thirdMonthTotal: 0 },
-    { name: '屈维涛', stores: 22, firstMonthTotal: 828.43, secondMonthTotal: 0, thirdMonthTotal: 0 },
-    { name: '朱雯雯', stores: 5, firstMonthTotal: 186.26, secondMonthTotal: 0, thirdMonthTotal: 0 },
-    { name: '杨蓉', stores: 5, firstMonthTotal: 133.16, secondMonthTotal: 0, thirdMonthTotal: 0 },
-    { name: '韩大武', stores: 52, firstMonthTotal: 1355.61, secondMonthTotal: 0, thirdMonthTotal: 0 },
-    { name: '秦金城', stores: 8, firstMonthTotal: 200.75, secondMonthTotal: 0, thirdMonthTotal: 0 },
-    { name: '赵春燕', stores: 3, firstMonthTotal: 72.57, secondMonthTotal: 0, thirdMonthTotal: 0 },
-    { name: '郭文', stores: 7, firstMonthTotal: 109.16, secondMonthTotal: 0, thirdMonthTotal: 0 },
+    { name: '梁智', stores: 61, firstMonthTotal: 2932.40, secondMonthTotal: 0, thirdMonthTotal: 0 },
+    { name: '屈维涛', stores: 22, firstMonthTotal: 1042.04, secondMonthTotal: 0, thirdMonthTotal: 0 },
+    { name: '向文强', stores: 55, firstMonthTotal: 2573.92, secondMonthTotal: 0, thirdMonthTotal: 0 },
+    { name: '杨蓉', stores: 5, firstMonthTotal: 231.53, secondMonthTotal: 0, thirdMonthTotal: 0 },
+    { name: '朱雯雯', stores: 5, firstMonthTotal: 227.85, secondMonthTotal: 0, thirdMonthTotal: 0 },
+    { name: '秦金城', stores: 9, firstMonthTotal: 262.21, secondMonthTotal: 0, thirdMonthTotal: 0 },
+    { name: '韩大武', stores: 65, firstMonthTotal: 1762.88, secondMonthTotal: 0, thirdMonthTotal: 0 },
+    { name: '郭文', stores: 9, firstMonthTotal: 169.94, secondMonthTotal: 0, thirdMonthTotal: 0 },
+    { name: '赵春燕', stores: 7, firstMonthTotal: 100.04, secondMonthTotal: 0, thirdMonthTotal: 0 },
+    { name: '陈梅', stores: 3, firstMonthTotal: 0, secondMonthTotal: 0, thirdMonthTotal: 0 },
+    { name: '李帅', stores: 2, firstMonthTotal: 0, secondMonthTotal: 0, thirdMonthTotal: 0 },
   ];
 
   const MARCH_SALES_TOTAL_STORES = MARCH_SALES_PEOPLE.reduce(

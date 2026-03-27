@@ -534,8 +534,6 @@
           <th>首月日均回款</th>
           <th>第二月日均回款</th>
           <th>第三月日均回款</th>
-          <th>次月留存金额比例</th>
-          <th>第三月留存金额比例</th>
           <th>前三月总占比</th>
           <th>每店截至总回款</th>
           <th>季节</th>
@@ -555,13 +553,15 @@
         <thead>
           <tr>
             <th>开单月份</th>
-            <th>首月日均回款</th>
-            <th>第二月日均回款</th>
-            <th>第三月日均回款</th>
-            <th>三个月平均日均回款</th>
-            <th>店均总回款（总额÷店铺数）</th>
-            <th>季节</th>
-          </tr>
+          <th>首月日均回款</th>
+          <th>第二月日均回款</th>
+          <th>第三月日均回款</th>
+          <th>三个月平均日均回款</th>
+          <th>次月留存金额比例</th>
+          <th>第三月留存金额比例</th>
+          <th>店均总回款（总额÷店铺数）</th>
+          <th>季节</th>
+        </tr>
         </thead>
         <tbody id="dailySummaryBody"></tbody>
       </table>
@@ -853,10 +853,10 @@
       </div>
       <div class="march-source">
         <div class="march-source-label">数据口径</div>
-        <div class="march-source-file">sales_analysis_march.html</div>
-        <div class="march-source-meta">首月统计：2025-03-01 ~ 2025-03-24（23天）</div>
-        <div class="march-source-meta">第二月统计：2025-04 全月（30天）</div>
-        <div class="march-source-meta">第三月统计：2025-05 全月（31天）</div>
+        <div class="march-source-file">2026-03-26 销售汇总截图</div>
+        <div class="march-source-meta">首月统计：2026-03-01 ~ 2026-03-26（26天）</div>
+        <div class="march-source-meta">第二月统计：2026-04 全月（30天）</div>
+        <div class="march-source-meta">第三月统计：2026-05 全月（31天）</div>
       </div>
     </div>
 
@@ -884,19 +884,19 @@
     </div>
   </div>
 
-  <div class="section-title">2025年3月销售开单三阶段绩效折算</div>
+  <div class="section-title">2026年3月销售开单三阶段绩效折算</div>
   <div class="sales-performance-block">
     <div class="sales-performance-intro">
       <div>
-        <p>首月数据来自原始 3 月销售回款表；第二月和第三月默认为空，需要后续补录回款总额。录入后，系统会立即计算第二月 / 第三月的自然日均回款，并把对应折算单量计入下个月 / 下下个月的额外单量。</p>
+        <p>首月数据已更新为截至 <strong>2026年3月26日</strong> 的销售汇总截图；第二月和第三月默认仍为空，需要后续补录回款总额。录入后，系统会立即计算第二月 / 第三月的自然日均回款，并把对应折算单量计入下个月 / 下下个月的额外单量。</p>
         <p>三套基准线独立控制，所以你可以单独设置首月、第二月、第三月的绩效门槛，观察不同政策下的累计绩效单量变化。</p>
       </div>
       <div class="march-source">
         <div class="march-source-label">样本范围</div>
-        <div class="march-source-file">3月销售开单总量：202 单</div>
-        <div class="march-source-meta">销售人数：9 人</div>
-        <div class="march-source-meta">第二月额外单量归属：下个月</div>
-        <div class="march-source-meta">第三月额外单量归属：下下个月</div>
+        <div class="march-source-file">3月销售开单总量：243 单</div>
+        <div class="march-source-meta">销售人数：11 人</div>
+        <div class="march-source-meta">首月统计：2026-03-01 ~ 2026-03-26（26天）</div>
+        <div class="march-source-meta">第二月额外单量归属：下个月 · 第三月额外单量归属：下下个月</div>
       </div>
     </div>
 
@@ -1173,8 +1173,6 @@ months.forEach(d => {
     <td>${fmtDaily(d.firstMonth.dailyAvg)}</td>
     <td>${fmtDaily(d.secondMonth.dailyAvg)}</td>
     <td>${fmtDaily(d.thirdMonth.dailyAvg)}</td>
-    <td>${fmtRetention(d.secondMonthRetentionPct)}</td>
-    <td>${fmtRetention(d.thirdMonthRetentionPct)}</td>
     <td>${fmtPct(d.threeMonthPct)}</td>
     <td class="mono" style="color:${d.peak?'var(--accent)':'var(--text)'};">¥${d.totalPerStore}</td>
     <td><span style="font-size:11px;color:${d.peak?'var(--accent)':'var(--muted)'};">${d.peak?'🔥 旺季':'淡季'}</span></td>
@@ -1187,6 +1185,8 @@ months.forEach(d => {
       <td>${fmtDaily(d.secondMonth.dailyAvg)}</td>
       <td>${fmtDaily(d.thirdMonth.dailyAvg)}</td>
       <td><span class="mono" style="color:${d.threeMonthAverageDaily >= 2.7 ? 'var(--good)' : d.threeMonthAverageDaily >= 1.8 ? 'var(--accent)' : 'var(--warn)'};">¥${d.threeMonthAverageDaily.toFixed(2)}</span></td>
+      <td>${fmtRetention(d.secondMonthRetentionPct)}</td>
+      <td>${fmtRetention(d.thirdMonthRetentionPct)}</td>
       <td><span class="mono" style="color:${d.perStoreTotalReturn >= 350 ? 'var(--good)' : d.perStoreTotalReturn >= 250 ? 'var(--accent)' : 'var(--warn)'};">¥${d.perStoreTotalReturn.toFixed(2)}</span></td>
       <td><span style="font-size:11px;color:${d.peak?'var(--accent)':'var(--muted)'};">${d.peak?'🔥 旺季':'淡季'}</span></td>
     </tr>`;
@@ -1207,8 +1207,6 @@ tbody.innerHTML += `
     <td>${fmtDaily(cohortAverages.firstMonth.dailyAvg)}</td>
     <td>${fmtDaily(cohortAverages.secondMonth.dailyAvg)}</td>
     <td>${fmtDaily(cohortAverages.thirdMonth.dailyAvg)}</td>
-    <td>${fmtRetention(cohortAverages.secondMonthRetentionPct, 1)}</td>
-    <td>${fmtRetention(cohortAverages.thirdMonthRetentionPct, 1)}</td>
     <td>${fmtPct(Number(cohortAverages.threeMonthPct.toFixed(1)))}</td>
     <td class="mono">¥${cohortAverages.totalPerStore.toFixed(1)}</td>
     <td><span style="font-size:11px;color:var(--muted);">样本均值</span></td>
@@ -1221,6 +1219,8 @@ dailySummaryBody.innerHTML += `
     <td>${fmtDaily(cohortAverages.secondMonth.dailyAvg)}</td>
     <td>${fmtDaily(cohortAverages.thirdMonth.dailyAvg)}</td>
     <td><span class="mono" style="color:var(--accent);">¥${cohortAverages.threeMonthAverageDaily.toFixed(2)}</span></td>
+    <td>${fmtRetention(cohortAverages.secondMonthRetentionPct, 1)}</td>
+    <td>${fmtRetention(cohortAverages.thirdMonthRetentionPct, 1)}</td>
     <td><span class="mono" style="color:var(--accent);">¥${cohortAverages.perStoreTotalReturn.toFixed(2)}</span></td>
     <td><span style="font-size:11px;color:var(--muted);">样本均值</span></td>
   </tr>`;
@@ -1369,7 +1369,7 @@ function renderSalesPerformance() {
         <td><div class="sales-name">${person.name}</div></td>
         <td class="mono">${person.stores}</td>
         <td class="mono">${formatMoney(stage1.totalReturn)}</td>
-        <td><span class="mono" style="color:${tone1.color};">¥${stage1.dailyAvg.toFixed(2)}</span><div class="sales-formula">23天口径</div></td>
+        <td><span class="mono" style="color:${tone1.color};">¥${stage1.dailyAvg.toFixed(2)}</span><div class="sales-formula">${stage1.days}天口径</div></td>
         <td class="mono">¥${stage1.standard.toFixed(1)}</td>
         <td><div class="sales-orders" style="color:${tone1.color};">${stage1.performanceOrders.toFixed(1)} 单</div><div class="sales-formula">${person.stores} × (${stage1.dailyAvg.toFixed(2)} ÷ ${stage1.standard.toFixed(1)})</div></td>
         <td><input type="number" min="0" step="0.01" data-index="${index}" data-stage="secondMonth" value="${stage2.totalReturn > 0 ? stage2.totalReturn.toFixed(2) : ''}"><div class="input-note">录入后按 30 天自动回算</div></td>
