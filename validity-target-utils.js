@@ -1,6 +1,6 @@
 (function (globalScope) {
-  const DEFAULT_OFF_SEASON_PER_STORE_TOTAL = 300;
-  const DEFAULT_PEAK_SEASON_PER_STORE_TOTAL = 400;
+  const DEFAULT_OFF_SEASON_PER_STORE_TOTAL = 200;
+  const DEFAULT_PEAK_SEASON_PER_STORE_TOTAL = 300;
   const DEFAULT_PEAK_MULTIPLIER = 1.5;
 
   function assertPositiveNumber(value, label) {

@@ -30,9 +30,11 @@ const {
 } = require(modulePath);
 
 assert.equal(DEFAULT_PEAK_MULTIPLIER, 1.5, '默认旺季倍率应为 1.5');
-assert.equal(DEFAULT_OFF_SEASON_PER_STORE_TOTAL, 300, '淡季单店合格总回款基准应为 300 元');
-assert.equal(DEFAULT_PEAK_SEASON_PER_STORE_TOTAL, 400, '旺季单店合格总回款基准应为 400 元');
+assert.equal(DEFAULT_OFF_SEASON_PER_STORE_TOTAL, 200, '淡季单店合格总回款基准应为 200 元');
+assert.equal(DEFAULT_PEAK_SEASON_PER_STORE_TOTAL, 300, '旺季单店合格总回款基准应为 300 元');
 assert.match(html, /单店合格总回款基准按样本均值折算/, '页面应说明总回款基准来自样本均值折算');
+assert.match(html, /淡季单店合格总回款基准 200 元 \/ 店/, '页面应展示更新后的淡季单店总回款基准说明');
+assert.match(html, /旺季单店合格总回款基准 300 元 \/ 店/, '页面应展示更新后的旺季单店总回款基准说明');
 assert.match(html, /淡季单店合格总回款基准/, '页面应展示淡季单店合格总回款基准');
 assert.match(html, /旺季单店合格总回款基准/, '页面应展示旺季单店合格总回款基准');
 assert.doesNotMatch(html, /当前平均回款周期按 75 天口径/, '页面不应继续展示固定 75 天口径');
@@ -45,12 +47,12 @@ const result = calculateTargetPlanByStandard({
 
 assert.equal(result.targetRevenue.toFixed(2), '166666.67', '目标总回款金额计算不正确');
 assert.equal(result.targetGrossProfit.toFixed(2), '66666.67', '目标毛利额计算不正确');
-assert.equal(result.offSeasonPerStoreTotal.toFixed(2), '300.00', '淡季单店总回款基准不正确');
-assert.equal(result.peakPerStoreTotal.toFixed(2), '400.00', '旺季单店总回款基准不正确');
-assert.equal(result.offSeasonRequiredStores, 556, '淡季所需开单数不正确');
-assert.equal(result.peakRequiredStores, 417, '旺季所需开单数不正确');
-assert.equal(result.offSeasonImpliedDays.toFixed(1), '166.7', '淡季动态回款周期不正确');
-assert.equal(result.peakSeasonImpliedDays.toFixed(1), '148.1', '旺季动态回款周期不正确');
+assert.equal(result.offSeasonPerStoreTotal.toFixed(2), '200.00', '淡季单店总回款基准不正确');
+assert.equal(result.peakPerStoreTotal.toFixed(2), '300.00', '旺季单店总回款基准不正确');
+assert.equal(result.offSeasonRequiredStores, 834, '淡季所需开单数不正确');
+assert.equal(result.peakRequiredStores, 556, '旺季所需开单数不正确');
+assert.equal(result.offSeasonImpliedDays.toFixed(1), '111.1', '淡季动态回款周期不正确');
+assert.equal(result.peakSeasonImpliedDays.toFixed(1), '111.1', '旺季动态回款周期不正确');
 
 const higherBase = calculateTargetPlanByStandard({
   companyCost: 100000,
@@ -58,7 +60,7 @@ const higherBase = calculateTargetPlanByStandard({
   baseDailyThreshold: 2.4,
 });
 
-assert.equal(higherBase.offSeasonRequiredStores, 556, '总回款基准固定后，淡季所需开单数应由单店总回款基准决定');
-assert.equal(higherBase.peakRequiredStores, 417, '总回款基准固定后，旺季所需开单数应由单店总回款基准决定');
-assert.equal(higherBase.offSeasonImpliedDays.toFixed(1), '125.0', '提高基准线后，淡季动态回款周期应缩短');
-assert.equal(higherBase.peakSeasonImpliedDays.toFixed(1), '111.1', '提高基准线后，旺季动态回款周期应缩短');
+assert.equal(higherBase.offSeasonRequiredStores, 834, '总回款基准固定后，淡季所需开单数应由单店总回款基准决定');
+assert.equal(higherBase.peakRequiredStores, 556, '总回款基准固定后，旺季所需开单数应由单店总回款基准决定');
+assert.equal(higherBase.offSeasonImpliedDays.toFixed(1), '83.3', '提高基准线后，淡季动态回款周期应缩短');
+assert.equal(higherBase.peakSeasonImpliedDays.toFixed(1), '83.3', '提高基准线后，旺季动态回款周期应缩短');
