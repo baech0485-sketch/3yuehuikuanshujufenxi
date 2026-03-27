@@ -679,35 +679,35 @@
 
     <div class="target-planner">
       <div class="target-planner-head">
-        <div class="target-planner-title">开单目标联动测算</div>
-        <div class="target-planner-note">淡季所需开单数 × 淡季单店合格总回款基准 = 目标总回款金额；公司总成本 = 目标总回款金额 × (1 - 毛利率)。单店合格总回款基准按样本均值折算（淡季单店合格总回款基准 200 元 / 店，旺季单店合格总回款基准 300 元 / 店）。</div>
+        <div class="target-planner-title">固定成本下的开单计划测算</div>
+        <div class="target-planner-note">固定参考目标仍由公司总成本 ÷ (1 - 目标利润率) 反推；下方滑块会联动当前计划总回款金额、当前计划利润额、目标完成率和旺季等价单量，但不会改动公司总成本。单店合格总回款基准按样本均值折算（淡季单店合格总回款基准 200 元 / 店，旺季单店合格总回款基准 300 元 / 店）。</div>
       </div>
 
       <div class="target-input-grid">
         <div class="target-input-card">
           <div class="target-input-label">公司总成本（月）</div>
           <input type="number" id="companyCostInput" min="1000" step="10" value="70000">
-          <div class="target-input-sub">可手动输入公司月总成本，系统会反推淡季开单滑块；拖动下方主控滑块时，这里也会同步更新。</div>
+          <div class="target-input-sub">手动输入公司月总成本后，系统会重置固定参考目标，并同步默认建议开单数；拖动下方主控滑块时，这里不会被改动。</div>
         </div>
         <div class="target-input-card">
-          <div class="target-input-label">目标毛利率</div>
+          <div class="target-input-label">目标利润率</div>
           <div class="target-input-value" id="grossMarginDisplay">40%</div>
           <div class="target-range-row">
             <span class="mono" style="font-size:11px;color:var(--muted);">10%</span>
             <input type="range" id="grossMarginSlider" min="10" max="70" step="1" value="40">
             <span class="mono" style="font-size:11px;color:var(--muted);">70%</span>
           </div>
-          <div class="target-input-sub">默认按 40% 毛利率估算，可手动调整。</div>
+          <div class="target-input-sub">默认按 40% 利润率估算，可手动调整。</div>
         </div>
         <div class="target-input-card">
-          <div class="target-input-label">淡季所需开单数主控</div>
+          <div class="target-input-label">淡季计划开单主控</div>
           <div class="target-input-value" id="requiredOrdersOffControlDisplay">583.3 单</div>
           <div class="target-range-row">
             <span class="mono" style="font-size:11px;color:var(--muted);">100</span>
             <input type="range" id="requiredOrdersOffSlider" min="100" max="1500" step="0.1" value="583.3">
             <span class="mono" style="font-size:11px;color:var(--muted);">1500</span>
           </div>
-          <div class="target-input-sub">拖动滑块将联动反推目标总回款、公司总成本和旺季开单数。</div>
+          <div class="target-input-sub">拖动滑块将联动测算计划回款、目标完成率和旺季等价单量，不会改动公司总成本。</div>
         </div>
         <div class="target-input-card">
           <div class="target-input-label">当前合格基准线</div>
@@ -720,12 +720,12 @@
         <div class="target-card">
           <div class="target-card-title">目标总回款金额</div>
           <div class="target-card-value" id="targetRevenueDisplay">—</div>
-          <div class="target-card-sub">由淡季开单主控和单店合格总回款基准联动推导。</div>
+          <div class="target-card-sub">会随淡季计划开单主控变化，表示当前计划对应的总回款金额。</div>
         </div>
         <div class="target-card">
-          <div class="target-card-title">目标毛利额</div>
+          <div class="target-card-title">计划利润额</div>
           <div class="target-card-value" id="targetProfitDisplay">—</div>
-          <div class="target-card-sub">= 目标总回款金额 × 毛利率</div>
+          <div class="target-card-sub">会随淡季计划开单主控变化，= 当前计划总回款金额 - 公司总成本。</div>
         </div>
         <div class="target-card">
           <div class="target-card-title">淡季单店合格总回款基准</div>
@@ -736,12 +736,12 @@
 
       <div class="target-compare-row">
         <div class="target-compare-card off">
-          <div class="target-compare-label">淡季所需开单数</div>
+          <div class="target-compare-label">淡季计划开单数</div>
           <div class="target-compare-value" style="color:var(--accent2);" id="requiredOrdersOff">—</div>
           <div class="target-compare-sub" id="requiredOrdersOffSub">—</div>
         </div>
         <div class="target-compare-card peak">
-          <div class="target-compare-label">旺季所需开单数</div>
+          <div class="target-compare-label">旺季等价开单数</div>
           <div class="target-compare-value" style="color:var(--accent);" id="requiredOrdersPeak">—</div>
           <div class="target-compare-sub" id="requiredOrdersPeakSub">—</div>
         </div>
@@ -1057,6 +1057,19 @@ function formatCompactMoney(value) {
   });
 }
 
+function formatOrderCount(value) {
+  if (!Number.isFinite(value)) {
+    return '—';
+  }
+  if (Math.abs(value - Math.round(value)) < 0.05) {
+    return Math.round(value).toLocaleString('zh-CN');
+  }
+  return Number(value).toLocaleString('zh-CN', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
+  });
+}
+
 function renderTrendGrid(containerId, points, maxValue, formatter) {
   const grid = document.getElementById(containerId);
   points.forEach((point) => {
@@ -1277,7 +1290,7 @@ function syncRequiredOrdersOffControl(value) {
     return;
   }
   requiredOrdersOffSlider.value = orderTarget.toFixed(1);
-  requiredOrdersOffControlDisplay.textContent = orderTarget.toFixed(1) + ' 单';
+  requiredOrdersOffControlDisplay.textContent = formatOrderCount(orderTarget) + ' 单';
 }
 
 function renderTargetPlan(plan) {
@@ -1286,14 +1299,14 @@ function renderTargetPlan(plan) {
   document.getElementById('targetRevenueDisplay').textContent = formatCompactMoney(plan.targetRevenue);
   document.getElementById('targetProfitDisplay').textContent = formatCompactMoney(plan.targetGrossProfit);
   document.getElementById('offStoreTotalDisplay').textContent = formatMoney(plan.offSeasonPerStoreTotal);
-  document.getElementById('requiredOrdersOff').textContent = plan.offSeasonRequiredStores.toLocaleString('zh-CN') + ' 单';
-  document.getElementById('requiredOrdersPeak').textContent = plan.peakRequiredStores.toLocaleString('zh-CN') + ' 单';
+  document.getElementById('requiredOrdersOff').textContent = formatOrderCount(plan.offSeasonPlannedStoresExact) + ' 单';
+  document.getElementById('requiredOrdersPeak').textContent = formatOrderCount(plan.peakEquivalentStoresExact) + ' 单';
   document.getElementById('requiredOrdersOffSub').textContent =
-    `当前主控目标 ${plan.offSeasonRequiredStoresExact.toFixed(1)} 单；淡季按 ${formatMoney(plan.offSeasonPerStoreTotal)} / 店测算，对应目标总回款 ${formatCompactMoney(plan.targetRevenue)}。`;
+    `按 ${formatMoney(plan.offSeasonPerStoreTotal)} / 店可形成 ${formatCompactMoney(plan.offSeasonPlannedRevenue)}；固定目标需 ${plan.offSeasonRequiredStoresExact.toFixed(1)} 单，当前完成率 ${(plan.completionRate * 100).toFixed(1)}%。`;
   document.getElementById('requiredOrdersPeakSub').textContent =
-    `旺季按 ${formatMoney(plan.peakPerStoreTotal)} / 店测算，精确需 ${plan.peakRequiredStoresExact.toFixed(1)} 单；固定基准线对应动态周期约 ${plan.peakSeasonImpliedDays.toFixed(1)} 天。`;
+    `按 ${formatMoney(plan.peakPerStoreTotal)} / 店折算，相当于 ${plan.peakEquivalentStoresExact.toFixed(1)} 单；固定目标旺季需 ${plan.peakRequiredStoresExact.toFixed(1)} 单。`;
   document.getElementById('targetFormulaBox').textContent =
-    `淡季所需开单 ${plan.offSeasonRequiredStoresExact.toFixed(1)} 单 × ${formatMoney(plan.offSeasonPerStoreTotal)} / 店 = 目标总回款 ${formatCompactMoney(plan.targetRevenue)}。再按毛利率 ${(plan.grossMarginRate * 100).toFixed(0)}% 反推，公司总成本约 ${formatCompactMoney(plan.companyCost)}，旺季需开 ${plan.peakRequiredStores} 单。`;
+    `公司总成本 ${formatCompactMoney(plan.companyCost)} ÷ (1 - 目标利润率 ${(plan.grossMarginRate * 100).toFixed(0)}%) = 固定参考目标 ${formatCompactMoney(plan.benchmarkRevenue)}。当前计划开 ${formatOrderCount(plan.offSeasonPlannedStoresExact)} 单，对应计划总回款 ${formatCompactMoney(plan.targetRevenue)}、计划利润额 ${formatCompactMoney(plan.targetGrossProfit)}，${plan.revenueGap >= 0 ? '距离参考目标还差 ' + formatCompactMoney(Math.abs(plan.revenueGap)) : '已超出参考目标 ' + formatCompactMoney(Math.abs(plan.revenueGap))}。`;
 }
 
 function updateTargetPlanFromCost() {
@@ -1310,7 +1323,7 @@ function updateTargetPlanFromCost() {
     requiredOrdersOffControlDisplay.textContent = '—';
     document.getElementById('requiredOrdersOffSub').textContent = '请输入有效的公司总成本。';
     document.getElementById('requiredOrdersPeakSub').textContent = '请输入有效的公司总成本。';
-    document.getElementById('targetFormulaBox').textContent = '请输入大于 0 的公司总成本，或直接拖动淡季所需开单数主控滑块。';
+    document.getElementById('targetFormulaBox').textContent = '请输入大于 0 的公司总成本后再进行计划开单测算。';
     return;
   }
   const plan = validityTargetUtils.calculateTargetPlanByStandard({
@@ -1319,20 +1332,33 @@ function updateTargetPlanFromCost() {
     baseDailyThreshold: FIXED_BASE_DAILY_THRESHOLD
   });
   syncRequiredOrdersOffControl(plan.offSeasonRequiredStoresExact);
-  renderTargetPlan(plan);
+  updateTargetPlanFromOrders();
 }
 
 function updateTargetPlanFromOrders() {
+  const companyCost = Number(companyCostInput.value || 0);
   const orderTarget = Number(requiredOrdersOffSlider.value || 0);
   const grossMarginRate = Number(grossMarginSlider.value) / 100;
+  if (!Number.isFinite(companyCost) || companyCost <= 0) {
+    document.getElementById('grossMarginDisplay').textContent = Math.round(grossMarginRate * 100) + '%';
+    document.getElementById('targetStdDisplay').textContent = '¥' + FIXED_BASE_DAILY_THRESHOLD.toFixed(1);
+    document.getElementById('targetRevenueDisplay').textContent = '—';
+    document.getElementById('targetProfitDisplay').textContent = '—';
+    document.getElementById('offStoreTotalDisplay').textContent = '—';
+    document.getElementById('requiredOrdersOff').textContent = '—';
+    document.getElementById('requiredOrdersPeak').textContent = '—';
+    document.getElementById('requiredOrdersOffSub').textContent = '请先填写有效的公司总成本。';
+    document.getElementById('requiredOrdersPeakSub').textContent = '请先填写有效的公司总成本。';
+    document.getElementById('targetFormulaBox').textContent = '公司总成本未设置完成，无法判断计划开单数距离固定目标还有多少差额。';
+    return;
+  }
   const plan = validityTargetUtils.calculateTargetPlanByOrders({
-    offSeasonRequiredStores: orderTarget,
+    companyCost,
+    offSeasonPlannedStores: orderTarget,
     grossMarginRate,
     baseDailyThreshold: FIXED_BASE_DAILY_THRESHOLD
   });
-
-  companyCostInput.value = plan.companyCost.toFixed(0);
-  syncRequiredOrdersOffControl(plan.offSeasonRequiredStoresExact);
+  syncRequiredOrdersOffControl(plan.offSeasonPlannedStoresExact);
   renderTargetPlan(plan);
 }
 

@@ -88,6 +88,8 @@
   }
 
   function calculateTargetPlanByOrders({
+    companyCost,
+    offSeasonPlannedStores,
     offSeasonRequiredStores,
     grossMarginRate,
     baseDailyThreshold,
@@ -95,22 +97,40 @@
     peakSeasonPerStoreTotal = DEFAULT_PEAK_SEASON_PER_STORE_TOTAL,
     peakMultiplier = DEFAULT_PEAK_MULTIPLIER,
   }) {
-    const requiredStores = assertPositiveNumber(offSeasonRequiredStores, '淡季所需开单数');
+    const cost = assertPositiveNumber(companyCost, '公司总成本');
+    const plannedStoresSource = offSeasonPlannedStores ?? offSeasonRequiredStores;
+    const plannedStores = assertPositiveNumber(plannedStoresSource, '淡季计划开单数');
     const offSeasonTotal = assertPositiveNumber(offSeasonPerStoreTotal, '淡季单店合格总回款基准');
-    const targetRevenue = requiredStores * offSeasonTotal;
+    const marginRate = assertMarginRate(grossMarginRate);
+    const benchmarkRevenue = cost / (1 - marginRate);
     const plan = buildTargetPlan({
-      targetRevenue,
-      grossMarginRate,
+      targetRevenue: benchmarkRevenue,
+      grossMarginRate: marginRate,
       baseDailyThreshold,
       offSeasonPerStoreTotal: offSeasonTotal,
       peakSeasonPerStoreTotal,
       peakMultiplier,
     });
+    const plannedRevenue = plannedStores * plan.offSeasonPerStoreTotal;
+    const plannedGrossProfit = plannedRevenue - cost;
+    const revenueGap = plan.targetRevenue - plannedRevenue;
+    const completionRate = plannedRevenue / plan.targetRevenue;
+    const peakEquivalentStoresExact = plannedRevenue / plan.peakPerStoreTotal;
 
     return {
       ...plan,
-      offSeasonRequiredStoresExact: requiredStores,
-      offSeasonRequiredStores: Math.ceil(requiredStores),
+      companyCost: cost,
+      benchmarkRevenue: plan.targetRevenue,
+      benchmarkGrossProfit: plan.targetGrossProfit,
+      targetRevenue: plannedRevenue,
+      targetGrossProfit: plannedGrossProfit,
+      offSeasonPlannedStoresExact: plannedStores,
+      offSeasonPlannedStores: Math.ceil(plannedStores),
+      offSeasonPlannedRevenue: plannedRevenue,
+      revenueGap,
+      completionRate,
+      peakEquivalentStoresExact,
+      peakEquivalentStores: Math.ceil(peakEquivalentStoresExact),
     };
   }
 
