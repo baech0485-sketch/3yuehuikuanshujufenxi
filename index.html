@@ -631,16 +631,16 @@
     <div class="standard-control" style="margin-top:20px;margin-bottom:20px;">
       <div class="std-label">
         <strong>合格日均回款基准线</strong>
-        <span style="font-size:11px;color:var(--muted);">拖动滑块 · 建议默认按淡季 ¥1.8/天、旺季 ¥2.7/天执行</span>
+        <span style="font-size:11px;color:var(--muted);">固定展示 · 淡季 ¥1.8/天、旺季 ¥2.7/天</span>
       </div>
       <div class="slider-wrap">
         <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);">¥0.5</span>
-        <input type="range" id="stdSlider" min="0.5" max="4.0" step="0.1" value="1.8">
+        <input type="range" id="stdSlider" min="0.5" max="4.0" step="0.1" value="1.8" disabled>
         <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);">¥4.0</span>
       </div>
       <div class="std-val-box">
         <div class="std-val-display" id="stdDisplay">¥1.8</div>
-        <div class="std-hint">/ 天 · 淡季基准</div>
+        <div class="std-hint">/ 天 · 固定淡季基准</div>
       </div>
     </div>
 
@@ -679,15 +679,15 @@
 
     <div class="target-planner">
       <div class="target-planner-head">
-        <div class="target-planner-title">成本目标反推开单量</div>
-        <div class="target-planner-note">目标总回款金额 = 公司总成本 ÷ (1 - 毛利率) · 单店合格总回款基准按样本均值折算（淡季单店合格总回款基准 200 元 / 店，旺季单店合格总回款基准 300 元 / 店）</div>
+        <div class="target-planner-title">开单目标联动测算</div>
+        <div class="target-planner-note">淡季所需开单数 × 淡季单店合格总回款基准 = 目标总回款金额；公司总成本 = 目标总回款金额 × (1 - 毛利率)。单店合格总回款基准按样本均值折算（淡季单店合格总回款基准 200 元 / 店，旺季单店合格总回款基准 300 元 / 店）。</div>
       </div>
 
       <div class="target-input-grid">
         <div class="target-input-card">
           <div class="target-input-label">公司总成本（月）</div>
-          <input type="number" id="companyCostInput" min="1000" step="1000" value="70000">
-          <div class="target-input-sub">输入公司月总成本，系统将按毛利率反推目标总回款金额。</div>
+          <input type="number" id="companyCostInput" min="1000" step="10" value="70000">
+          <div class="target-input-sub">可手动输入公司月总成本，系统会反推淡季开单滑块；拖动下方主控滑块时，这里也会同步更新。</div>
         </div>
         <div class="target-input-card">
           <div class="target-input-label">目标毛利率</div>
@@ -700,9 +700,19 @@
           <div class="target-input-sub">默认按 40% 毛利率估算，可手动调整。</div>
         </div>
         <div class="target-input-card">
+          <div class="target-input-label">淡季所需开单数主控</div>
+          <div class="target-input-value" id="requiredOrdersOffControlDisplay">583.3 单</div>
+          <div class="target-range-row">
+            <span class="mono" style="font-size:11px;color:var(--muted);">100</span>
+            <input type="range" id="requiredOrdersOffSlider" min="100" max="1500" step="0.1" value="583.3">
+            <span class="mono" style="font-size:11px;color:var(--muted);">1500</span>
+          </div>
+          <div class="target-input-sub">拖动滑块将联动反推目标总回款、公司总成本和旺季开单数。</div>
+        </div>
+        <div class="target-input-card">
           <div class="target-input-label">当前合格基准线</div>
           <div class="target-input-value" id="targetStdDisplay">¥1.8</div>
-          <div class="target-input-sub">与上方“合格日均回款基准线”滑块实时联动。</div>
+          <div class="target-input-sub">该判定基准已固定展示，不再作为联动输入项。</div>
         </div>
       </div>
 
@@ -710,12 +720,12 @@
         <div class="target-card">
           <div class="target-card-title">目标总回款金额</div>
           <div class="target-card-value" id="targetRevenueDisplay">—</div>
-          <div class="target-card-sub">根据公司总成本和目标毛利率反推得到。</div>
+          <div class="target-card-sub">由淡季开单主控和单店合格总回款基准联动推导。</div>
         </div>
         <div class="target-card">
           <div class="target-card-title">目标毛利额</div>
           <div class="target-card-value" id="targetProfitDisplay">—</div>
-          <div class="target-card-sub">= 目标总回款金额 - 公司总成本</div>
+          <div class="target-card-sub">= 目标总回款金额 × 毛利率</div>
         </div>
         <div class="target-card">
           <div class="target-card-title">淡季单店合格总回款基准</div>
@@ -1230,6 +1240,9 @@ const slider  = document.getElementById('stdSlider');
 const display = document.getElementById('stdDisplay');
 const companyCostInput = document.getElementById('companyCostInput');
 const grossMarginSlider = document.getElementById('grossMarginSlider');
+const requiredOrdersOffSlider = document.getElementById('requiredOrdersOffSlider');
+const requiredOrdersOffControlDisplay = document.getElementById('requiredOrdersOffControlDisplay');
+const FIXED_BASE_DAILY_THRESHOLD = 1.8;
 const marchSalesUtils = window.MarchSalesUtils;
 const salesPerformanceBody = document.getElementById('salesPerformanceBody');
 const salesPerformanceState = marchSalesUtils.MARCH_SALES_PEOPLE.map((person) => ({
@@ -1257,41 +1270,70 @@ function updateSim(base) {
   document.getElementById('offMin30').textContent  = '¥' + (base * 30).toFixed(0);
 }
 
-function updateTargetPlan(base) {
-  const companyCost = Number(companyCostInput.value || 0);
-  const grossMarginRate = Number(grossMarginSlider.value) / 100;
-  if (!Number.isFinite(companyCost) || companyCost <= 0) {
-    document.getElementById('grossMarginDisplay').textContent = Math.round(grossMarginRate * 100) + '%';
-    document.getElementById('targetStdDisplay').textContent = '¥' + base.toFixed(1);
-    document.getElementById('targetRevenueDisplay').textContent = '—';
-    document.getElementById('targetProfitDisplay').textContent = '—';
-    document.getElementById('offStoreTotalDisplay').textContent = '—';
-    document.getElementById('requiredOrdersOff').textContent = '—';
-    document.getElementById('requiredOrdersPeak').textContent = '—';
-    document.getElementById('requiredOrdersOffSub').textContent = '请输入有效的公司总成本。';
-    document.getElementById('requiredOrdersPeakSub').textContent = '请输入有效的公司总成本。';
-    document.getElementById('targetFormulaBox').textContent = '请输入大于 0 的公司总成本后再测算目标总回款金额和所需开单数。';
+function syncRequiredOrdersOffControl(value) {
+  const orderTarget = Number(value);
+  if (!Number.isFinite(orderTarget) || orderTarget <= 0) {
+    requiredOrdersOffControlDisplay.textContent = '—';
     return;
   }
-  const plan = validityTargetUtils.calculateTargetPlanByStandard({
-    companyCost,
-    grossMarginRate,
-    baseDailyThreshold: base
-  });
+  requiredOrdersOffSlider.value = orderTarget.toFixed(1);
+  requiredOrdersOffControlDisplay.textContent = orderTarget.toFixed(1) + ' 单';
+}
 
-  document.getElementById('grossMarginDisplay').textContent = Math.round(grossMarginRate * 100) + '%';
-  document.getElementById('targetStdDisplay').textContent = '¥' + base.toFixed(1);
+function renderTargetPlan(plan) {
+  document.getElementById('grossMarginDisplay').textContent = Math.round(plan.grossMarginRate * 100) + '%';
+  document.getElementById('targetStdDisplay').textContent = '¥' + plan.baseDailyThreshold.toFixed(1);
   document.getElementById('targetRevenueDisplay').textContent = formatCompactMoney(plan.targetRevenue);
   document.getElementById('targetProfitDisplay').textContent = formatCompactMoney(plan.targetGrossProfit);
   document.getElementById('offStoreTotalDisplay').textContent = formatMoney(plan.offSeasonPerStoreTotal);
   document.getElementById('requiredOrdersOff').textContent = plan.offSeasonRequiredStores.toLocaleString('zh-CN') + ' 单';
   document.getElementById('requiredOrdersPeak').textContent = plan.peakRequiredStores.toLocaleString('zh-CN') + ' 单';
   document.getElementById('requiredOrdersOffSub').textContent =
-    `淡季按 ${formatMoney(plan.offSeasonPerStoreTotal)} / 店测算；当前基准线 ¥${base.toFixed(1)}/天 对应动态周期约 ${plan.offSeasonImpliedDays.toFixed(1)} 天，精确需 ${plan.offSeasonRequiredStoresExact.toFixed(1)} 单。`;
+    `当前主控目标 ${plan.offSeasonRequiredStoresExact.toFixed(1)} 单；淡季按 ${formatMoney(plan.offSeasonPerStoreTotal)} / 店测算，对应目标总回款 ${formatCompactMoney(plan.targetRevenue)}。`;
   document.getElementById('requiredOrdersPeakSub').textContent =
-    `旺季按 ${formatMoney(plan.peakPerStoreTotal)} / 店测算；当前基准线 ¥${plan.peakDailyThreshold.toFixed(1)}/天 对应动态周期约 ${plan.peakSeasonImpliedDays.toFixed(1)} 天，精确需 ${plan.peakRequiredStoresExact.toFixed(1)} 单。`;
+    `旺季按 ${formatMoney(plan.peakPerStoreTotal)} / 店测算，精确需 ${plan.peakRequiredStoresExact.toFixed(1)} 单；固定基准线对应动态周期约 ${plan.peakSeasonImpliedDays.toFixed(1)} 天。`;
   document.getElementById('targetFormulaBox').textContent =
-    `公司总成本 ${formatCompactMoney(plan.companyCost)} ÷ (1 - 毛利率 ${(plan.grossMarginRate * 100).toFixed(0)}%) = 目标总回款 ${formatCompactMoney(plan.targetRevenue)}。当前按淡季 ${formatMoney(plan.offSeasonPerStoreTotal)} / 店、旺季 ${formatMoney(plan.peakPerStoreTotal)} / 店测算，对应淡季需开 ${plan.offSeasonRequiredStores} 单、旺季需开 ${plan.peakRequiredStores} 单。`;
+    `淡季所需开单 ${plan.offSeasonRequiredStoresExact.toFixed(1)} 单 × ${formatMoney(plan.offSeasonPerStoreTotal)} / 店 = 目标总回款 ${formatCompactMoney(plan.targetRevenue)}。再按毛利率 ${(plan.grossMarginRate * 100).toFixed(0)}% 反推，公司总成本约 ${formatCompactMoney(plan.companyCost)}，旺季需开 ${plan.peakRequiredStores} 单。`;
+}
+
+function updateTargetPlanFromCost() {
+  const companyCost = Number(companyCostInput.value || 0);
+  const grossMarginRate = Number(grossMarginSlider.value) / 100;
+  if (!Number.isFinite(companyCost) || companyCost <= 0) {
+    document.getElementById('grossMarginDisplay').textContent = Math.round(grossMarginRate * 100) + '%';
+    document.getElementById('targetStdDisplay').textContent = '¥' + FIXED_BASE_DAILY_THRESHOLD.toFixed(1);
+    document.getElementById('targetRevenueDisplay').textContent = '—';
+    document.getElementById('targetProfitDisplay').textContent = '—';
+    document.getElementById('offStoreTotalDisplay').textContent = '—';
+    document.getElementById('requiredOrdersOff').textContent = '—';
+    document.getElementById('requiredOrdersPeak').textContent = '—';
+    requiredOrdersOffControlDisplay.textContent = '—';
+    document.getElementById('requiredOrdersOffSub').textContent = '请输入有效的公司总成本。';
+    document.getElementById('requiredOrdersPeakSub').textContent = '请输入有效的公司总成本。';
+    document.getElementById('targetFormulaBox').textContent = '请输入大于 0 的公司总成本，或直接拖动淡季所需开单数主控滑块。';
+    return;
+  }
+  const plan = validityTargetUtils.calculateTargetPlanByStandard({
+    companyCost,
+    grossMarginRate,
+    baseDailyThreshold: FIXED_BASE_DAILY_THRESHOLD
+  });
+  syncRequiredOrdersOffControl(plan.offSeasonRequiredStoresExact);
+  renderTargetPlan(plan);
+}
+
+function updateTargetPlanFromOrders() {
+  const orderTarget = Number(requiredOrdersOffSlider.value || 0);
+  const grossMarginRate = Number(grossMarginSlider.value) / 100;
+  const plan = validityTargetUtils.calculateTargetPlanByOrders({
+    offSeasonRequiredStores: orderTarget,
+    grossMarginRate,
+    baseDailyThreshold: FIXED_BASE_DAILY_THRESHOLD
+  });
+
+  companyCostInput.value = plan.companyCost.toFixed(0);
+  syncRequiredOrdersOffControl(plan.offSeasonRequiredStoresExact);
+  renderTargetPlan(plan);
 }
 
 function getSalesTone(ratio) {
@@ -1406,13 +1448,9 @@ function renderSalesPerformance() {
   salesPerformanceBody.innerHTML = rows;
 }
 
-slider.addEventListener('input', () => {
-  const value = parseFloat(slider.value);
-  updateSim(value);
-  updateTargetPlan(value);
-});
-grossMarginSlider.addEventListener('input', () => updateTargetPlan(parseFloat(slider.value)));
-companyCostInput.addEventListener('input', () => updateTargetPlan(parseFloat(slider.value)));
+grossMarginSlider.addEventListener('input', () => updateTargetPlanFromOrders());
+companyCostInput.addEventListener('input', () => updateTargetPlanFromCost());
+requiredOrdersOffSlider.addEventListener('input', () => updateTargetPlanFromOrders());
 Object.values(salesStdSliders).forEach((element) => {
   element.addEventListener('input', () => renderSalesPerformance());
 });
@@ -1429,8 +1467,9 @@ salesPerformanceBody.addEventListener('input', (event) => {
   salesPerformanceState[index][`${stage}Total`] = Number(target.value || 0);
   renderSalesPerformance();
 });
-updateSim(1.8);
-updateTargetPlan(1.8);
+updateSim(FIXED_BASE_DAILY_THRESHOLD);
+syncRequiredOrdersOffControl(Number(requiredOrdersOffSlider.value));
+updateTargetPlanFromCost();
 renderSalesPerformance();
 </script>
 </body>

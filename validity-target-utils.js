@@ -19,15 +19,15 @@
     return numericValue;
   }
 
-  function calculateTargetPlanByStandard({
-    companyCost,
+  function buildTargetPlan({
+    targetRevenue,
     grossMarginRate,
     baseDailyThreshold,
-    offSeasonPerStoreTotal = DEFAULT_OFF_SEASON_PER_STORE_TOTAL,
-    peakSeasonPerStoreTotal = DEFAULT_PEAK_SEASON_PER_STORE_TOTAL,
-    peakMultiplier = DEFAULT_PEAK_MULTIPLIER,
+    offSeasonPerStoreTotal,
+    peakSeasonPerStoreTotal,
+    peakMultiplier,
   }) {
-    const cost = assertPositiveNumber(companyCost, '公司总成本');
+    const revenue = assertPositiveNumber(targetRevenue, '目标总回款金额');
     const marginRate = assertMarginRate(grossMarginRate);
     const base = assertPositiveNumber(baseDailyThreshold, '合格日均回款基准线');
     const offSeasonTotal = assertPositiveNumber(offSeasonPerStoreTotal, '淡季单店合格总回款基准');
@@ -35,20 +35,20 @@
     const seasonalMultiplier = assertPositiveNumber(peakMultiplier, '旺季倍率');
     const peakDailyThreshold = base * seasonalMultiplier;
 
-    const targetRevenue = cost / (1 - marginRate);
-    const targetGrossProfit = targetRevenue - cost;
-    const offSeasonRequiredStoresExact = targetRevenue / offSeasonTotal;
-    const peakRequiredStoresExact = targetRevenue / peakSeasonTotal;
+    const companyCost = revenue * (1 - marginRate);
+    const targetGrossProfit = revenue - companyCost;
+    const offSeasonRequiredStoresExact = revenue / offSeasonTotal;
+    const peakRequiredStoresExact = revenue / peakSeasonTotal;
     const offSeasonImpliedDays = offSeasonTotal / base;
     const peakSeasonImpliedDays = peakSeasonTotal / peakDailyThreshold;
 
     return {
-      companyCost: cost,
+      companyCost,
       grossMarginRate: marginRate,
       baseDailyThreshold: base,
       peakDailyThreshold,
       peakMultiplier: seasonalMultiplier,
-      targetRevenue,
+      targetRevenue: revenue,
       targetGrossProfit,
       offSeasonPerStoreTotal: offSeasonTotal,
       peakPerStoreTotal: peakSeasonTotal,
@@ -61,11 +61,65 @@
     };
   }
 
+  function calculateTargetPlanByStandard({
+    companyCost,
+    grossMarginRate,
+    baseDailyThreshold,
+    offSeasonPerStoreTotal = DEFAULT_OFF_SEASON_PER_STORE_TOTAL,
+    peakSeasonPerStoreTotal = DEFAULT_PEAK_SEASON_PER_STORE_TOTAL,
+    peakMultiplier = DEFAULT_PEAK_MULTIPLIER,
+  }) {
+    const cost = assertPositiveNumber(companyCost, '公司总成本');
+    const marginRate = assertMarginRate(grossMarginRate);
+    const targetRevenue = cost / (1 - marginRate);
+    const plan = buildTargetPlan({
+      targetRevenue,
+      grossMarginRate: marginRate,
+      baseDailyThreshold,
+      offSeasonPerStoreTotal,
+      peakSeasonPerStoreTotal,
+      peakMultiplier,
+    });
+
+    return {
+      ...plan,
+      companyCost: cost,
+    };
+  }
+
+  function calculateTargetPlanByOrders({
+    offSeasonRequiredStores,
+    grossMarginRate,
+    baseDailyThreshold,
+    offSeasonPerStoreTotal = DEFAULT_OFF_SEASON_PER_STORE_TOTAL,
+    peakSeasonPerStoreTotal = DEFAULT_PEAK_SEASON_PER_STORE_TOTAL,
+    peakMultiplier = DEFAULT_PEAK_MULTIPLIER,
+  }) {
+    const requiredStores = assertPositiveNumber(offSeasonRequiredStores, '淡季所需开单数');
+    const offSeasonTotal = assertPositiveNumber(offSeasonPerStoreTotal, '淡季单店合格总回款基准');
+    const targetRevenue = requiredStores * offSeasonTotal;
+    const plan = buildTargetPlan({
+      targetRevenue,
+      grossMarginRate,
+      baseDailyThreshold,
+      offSeasonPerStoreTotal: offSeasonTotal,
+      peakSeasonPerStoreTotal,
+      peakMultiplier,
+    });
+
+    return {
+      ...plan,
+      offSeasonRequiredStoresExact: requiredStores,
+      offSeasonRequiredStores: Math.ceil(requiredStores),
+    };
+  }
+
   const api = {
     DEFAULT_OFF_SEASON_PER_STORE_TOTAL,
     DEFAULT_PEAK_SEASON_PER_STORE_TOTAL,
     DEFAULT_PEAK_MULTIPLIER,
     calculateTargetPlanByStandard,
+    calculateTargetPlanByOrders,
   };
 
   if (typeof module !== 'undefined' && module.exports) {
